@@ -1,24 +1,15 @@
-import { test } from '@playwright/test';
+import { test } from '../../support/fixtures';
 import { expect } from '../../support/matchers/jwtMatcher';
 import { expect as ulidExpect } from '../../support/matchers/ulidMatcher';
-import { authService } from '../../support/services/auth';
 import { getLoginUser } from '../../support/factories/loginUser';
 
 test.describe('POST /api/auth/login', () => {
 
-    let login;
-
-    test.beforeEach(({ request }) => {
-
-        login = authService(request);
-
-    });
-
-    test('Deve logar com sucesso', async () => {
+    test('Deve logar com sucesso', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser(payload);
+        const response = await auth.loginUser(payload);
 
         expect(response.status()).toBe(200);
         expect(response.ok()).toBeTruthy();
@@ -35,11 +26,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar com email inválido', async () => {
+    test('Não deve logar com email inválido', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, email: 'invalidEmail@invalid.com' });
+        const response = await auth.loginUser({ ...payload, email: 'invalidEmail@invalid.com' });
 
         expect(response.status()).toBe(401);
         expect(response.statusText()).toBe('Unauthorized');
@@ -48,11 +39,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar sem email preenchido', async () => {
+    test('Não deve logar sem email preenchido', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, email: ' ' });
+        const response = await auth.loginUser({ ...payload, email: ' ' });
 
         expect(response.status()).toBe(400);
         expect(response.statusText()).toBe('Bad Request');
@@ -61,11 +52,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar sem email', async () => {
+    test('Não deve logar sem email', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, email: null });
+        const response = await auth.loginUser({ ...payload, email: null });
 
         expect(response.status()).toBe(400);
         expect(response.statusText()).toBe('Bad Request');
@@ -74,11 +65,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar sem senha', async () => {
+    test('Não deve logar sem senha', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, password: null });
+        const response = await auth.loginUser({ ...payload, password: null });
 
         expect(response.status()).toBe(400);
         expect(response.statusText()).toBe('Bad Request');
@@ -87,11 +78,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar com senha inválida', async () => {
+    test('Não deve logar com senha inválida', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, password: 'invalidPassword' });
+        const response = await auth.loginUser({ ...payload, password: 'invalidPassword' });
 
         expect(response.status()).toBe(401);
         expect(response.statusText()).toBe('Unauthorized');
@@ -100,11 +91,11 @@ test.describe('POST /api/auth/login', () => {
 
     });
 
-    test('Não deve logar com senha em branco', async () => {
+    test('Não deve logar com senha em branco', async ({ auth }) => {
 
         const payload = getLoginUser();
 
-        const response = await login.loginUser({ ...payload, password: ' ' });
+        const response = await auth.loginUser({ ...payload, password: ' ' });
 
         expect(response.status()).toBe(401);
         expect(response.statusText()).toBe('Unauthorized');
