@@ -14,17 +14,23 @@ export const linkService = (request) => {
         return token;
     };
 
-    const createLink = async (payload) => {
-        const token = await getToken();
+    const createLink = async (payload, customToken) => {
+        const headers = {};
+
+        if (customToken === undefined) {
+            const token = await getToken();
+            headers['Authorization'] = `Bearer ${token}`;
+        } else if (customToken) {
+            headers['Authorization'] = `Bearer ${customToken}`;
+        }
+
         return await request.post('/api/links', {
-            headers: {
-                'Authorization': `Bearer ${token}`
-            },
+            headers,
             data: payload
         });
     };
 
-    const payloadLink = async () => {
+    const payloadLink = () => {
         const payload = {
             original_url: faker.internet.url(),
             title: faker.music.songName()
