@@ -5,9 +5,15 @@ import { getLoginUser } from '../../support/factories/loginUser';
 
 test.describe('POST /api/auth/login', () => {
 
-    test('Deve logar com sucesso', async ({ auth }) => {
+    let payload;
 
-        const payload = getLoginUser();
+    test.beforeEach(({ auth }) => {
+
+        payload = getLoginUser();
+
+    });
+
+    test('Deve logar com sucesso', async ({ auth }) => {
 
         const response = await auth.loginUser(payload);
 
@@ -28,8 +34,6 @@ test.describe('POST /api/auth/login', () => {
 
     test('Não deve logar com email inválido', async ({ auth }) => {
 
-        const payload = getLoginUser();
-
         const response = await auth.loginUser({ ...payload, email: 'invalidEmail@invalid.com' });
 
         expect(response.status()).toBe(401);
@@ -40,8 +44,6 @@ test.describe('POST /api/auth/login', () => {
     });
 
     test('Não deve logar sem email preenchido', async ({ auth }) => {
-
-        const payload = getLoginUser();
 
         const response = await auth.loginUser({ ...payload, email: ' ' });
 
@@ -54,8 +56,6 @@ test.describe('POST /api/auth/login', () => {
 
     test('Não deve logar sem email', async ({ auth }) => {
 
-        const payload = getLoginUser();
-
         const response = await auth.loginUser({ ...payload, email: null });
 
         expect(response.status()).toBe(400);
@@ -66,8 +66,6 @@ test.describe('POST /api/auth/login', () => {
     });
 
     test('Não deve logar sem senha', async ({ auth }) => {
-
-        const payload = getLoginUser();
 
         const response = await auth.loginUser({ ...payload, password: null });
 
@@ -80,8 +78,6 @@ test.describe('POST /api/auth/login', () => {
 
     test('Não deve logar com senha inválida', async ({ auth }) => {
 
-        const payload = getLoginUser();
-
         const response = await auth.loginUser({ ...payload, password: 'invalidPassword' });
 
         expect(response.status()).toBe(401);
@@ -92,8 +88,6 @@ test.describe('POST /api/auth/login', () => {
     });
 
     test('Não deve logar com senha em branco', async ({ auth }) => {
-
-        const payload = getLoginUser();
 
         const response = await auth.loginUser({ ...payload, password: ' ' });
 

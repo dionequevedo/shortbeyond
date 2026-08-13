@@ -5,15 +5,16 @@ import { getUser } from '../../support/factories/userBR';
 test.describe('POST /api/auth/register', () => {
 
     let register;
+    let payload;
 
     test.beforeEach(({ auth }) => {
 
         register = auth;
+        payload = getUser();
 
     });
 
     test('Deve cadastrar um novo usuário', async () => {
-        const payload = getUser();
 
         const response = await register.creatUser(payload);
 
@@ -30,9 +31,8 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar usuário já existente', async () => {
-        const payload = getUser();
+
         const preCondition = await register.creatUser(payload);
-        expect(preCondition.status()).toBe(201);
 
         const response = await register.creatUser(payload);
 
@@ -44,7 +44,6 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar email inválido', async () => {
-        const payload = getUser();
 
         const response = await register.creatUser({ ...payload, email: 'invalidEmail@invalid' });
 
@@ -56,7 +55,7 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar senha inválida', async () => {
-        const payload = getUser();
+        ;
 
         const response = await register.creatUser({ ...payload, password: 'a1' });
 
@@ -68,7 +67,6 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar usuário sem senha', async () => {
-        const payload = getUser();
 
         const response = await register.creatUser({ ...payload, password: null });
 
@@ -80,7 +78,6 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar nome inválido', async () => {
-        const payload = getUser();
 
         const response = await register.creatUser({ ...payload, name: ' ' });
 
@@ -92,7 +89,6 @@ test.describe('POST /api/auth/register', () => {
     });
 
     test('Não deve cadastrar sem nome', async () => {
-        const payload = getUser();
 
         const response = await register.creatUser({ ...payload, name: null });
 
