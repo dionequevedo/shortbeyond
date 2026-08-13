@@ -1,11 +1,9 @@
 // @ts-check
 import { defineConfig } from '@playwright/test';
 
-const dotenv = require('dotenv');
+import dotenv from 'dotenv';
 
-dotenv.config({
-  override: true
-});
+dotenv.config();
 
 /**
  * Read environment variables from file.
