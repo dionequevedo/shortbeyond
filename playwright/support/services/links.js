@@ -49,7 +49,8 @@ export const linkService = (request) => {
 
     const payloadLink = () => {
         const payload = {
-            original_url: faker.internet.url(),
+            //original_url: faker.internet.url(),
+            original_url: 'https://www.github.com',
             title: faker.music.songName()
         };
         return payload;
@@ -94,9 +95,9 @@ export const linkService = (request) => {
         });
     };
 
-    const redirect = async (code, options = {}) => {
+    const redirect = async (code) => {
 
-        return await request.get(`/${code}`, options);
+        return await request.get(`/${code}`);
     };
 
     return {

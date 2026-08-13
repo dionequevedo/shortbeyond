@@ -12,14 +12,18 @@ test.describe('GET /api/links', () => {
         expect(responseBody.count).toBe(responseBody.data.length);
         expect(responseBody).toHaveProperty('data');
         expect(responseBody.data).Array;
-        expect(responseBody.data[0]).toHaveProperty('id');
-        expect(responseBody.data[0].id).toBeULID();
-        expect(responseBody.data[0]).toHaveProperty('original_url');
-        expect(responseBody.data[0].original_url).String;
-        expect(responseBody.data[0]).toHaveProperty('short_code');
-        expect(responseBody.data[0].short_code).toHaveLength(5);
-        expect(responseBody.data[0]).toHaveProperty('title');
-        expect(responseBody.data.title).String;
+        // Validar a estrutura de cada item da lista
+        for (const link of responseBody.data) {
+            expect(link).toHaveProperty('id');
+            expect(link.id).toBeULID();
+            expect(link).toHaveProperty('original_url');
+            expect(link.original_url).String;
+            expect(link).toHaveProperty('short_code');
+            expect(link.short_code).String;
+            expect(link.short_code).toHaveLength(5);
+            expect(link).toHaveProperty('title');
+            expect(link.title).String;
+        }
         expect(responseBody).toHaveProperty('message', 'Links Encurtados');
     });
 
