@@ -1,15 +1,14 @@
-import { test } from '@playwright/test';
+import { test } from '../../support/fixtures';
 import { expect } from '../../support/matchers/ulidMatcher'; // Importa o expect estendido
 import { getUser } from '../../support/factories/userBR';
-import { authService } from '../../support/services/auth';
 
 test.describe('POST /api/auth/register', () => {
 
     let register;
 
-    test.beforeEach(({ request }) => {
+    test.beforeEach(({ auth }) => {
 
-        register = authService(request);
+        register = auth;
 
     });
 
