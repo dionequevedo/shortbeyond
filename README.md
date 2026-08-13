@@ -16,6 +16,29 @@ A arquitetura do projeto foi desenhada para garantir a facilidade de manutençã
 
 ---
 
+## 🚀 Melhorias de Código e Ampliação de Cobertura
+
+Recentemente, a suíte de testes passou por refatorações e ampliação da cobertura para elevar a maturidade do projeto e a qualidade das validações:
+
+1. **Validação de Respostas HTML no Redirecionamento (`GET /{code}`):**
+   - Implementada verificação do cabeçalho `Content-Type: text/html`.
+   - Adicionada leitura do corpo da resposta via `response.text()` para confirmar a integridade e estrutura do documento HTML (`<!doctype html>`).
+
+2. **Asserção Completa de Coleções (`GET /api/links`):**
+   - A verificação da listagem de links foi ampliada para iterar sobre todos os itens retornados no array de dados (`responseBody.data`).
+   - Garante que cada item retornado possua as propriedades `id` (ULID válido), `original_url`, `short_code` (com exatamente 5 caracteres) e `title` devidamente preenchidas e tipadas.
+
+3. **Custom Matchers Estendidos:**
+   - Integração do matcher customizado `toBeULID()` para asserção de identificadores únicos no padrão ULID.
+
+4. **Padronização de Massas de Teste (Factories):**
+   - Ajustes nas factories (`userBR.js`) para geração de e-mails dinâmicos alinhados com o domínio aceito pela aplicação (`@dionequevedo.com.br`).
+
+5. **Ampliação da Suíte (29 testes automatizados):**
+   - 29 cenários de teste divididos em 4 suítes principais (`auth`, `health`, `links`, `redirect`), cobrindo cenários de sucesso, validações de parâmetros, regras de negócio e tratamento de exceções.
+
+---
+
 ## 🏗️ Arquitetura da Infraestrutura (Podman)
 
 Os serviços necessários para a execução dos testes são orquestrados através do manifesto Kubernetes/Podman `shortbeyond.yaml`. Ao subir o Pod no Podman, os seguintes contêineres são disponibilizados:
@@ -39,20 +62,23 @@ Os serviços necessários para a execução dos testes são orquestrados atravé
 ├── package.json               # Dependências do projeto Node.js
 └── playwright/
     ├── e2e/                   # Suítes de testes de API (.spec.js)
-    │   ├── auth/              # Testes do módulo de autenticação
+    │   ├── auth/              # Testes do módulo de autenticação (login, cadastro)
     │   ├── health/            # Testes de verificação de saúde da API
-    │   └── links/             # Testes das rotas de encurtamento/gerenciamento de links
+    │   ├── links/             # Testes das rotas de encurtamento, listagem e remoção de links
+    │   └── redirect/          # Testes de redirecionamento de links (respostas HTML)
     └── support/               # Camada de suporte e abstrações
         ├── factories/         # Geradores de massa de dados de teste (Faker)
-        ├── matchers/          # Custom matchers/assertions estendidos
-        └── services/          # Service Objects (abstração das chamadas de API)
+        ├── fixtures/          # Injeção de dependências e fixtures de teste
+        ├── matchers/          # Custom matchers/assertions estendidos (ex: toBeULID)
+        └── services/          # Service Objects (abstração das chamadas HTTP da API)
 ```
 
 ### Padrões de Projeto Utilizados
 
 1. **Service Object Pattern (`playwright/support/services/`):** Abstrai as chamadas HTTP para a API em classes/módulos reutilizáveis (`auth.js`, `links.js`), desacoplando a regra de negócio das especificações de teste.
 2. **Factory Pattern (`playwright/support/factories/`):** Abstrai a criação de objetos e payloads para os testes utilizando o `@faker-js/faker`.
-3. **Environment Management (`dotenv`):** As variáveis registradas no `.env` (como `BASE_URL`, `USER_LOGIN` e `PASSWORD_LOGIN`) são automaticamente injetadas na configuração do Playwright (`playwright.config.js`).
+3. **Fixture Pattern (`playwright/support/fixtures/`):** Disponibiliza os serviços diretamente nas especificações de teste através de injeção de dependências.
+4. **Environment Management (`dotenv`):** As variáveis registradas no `.env` (como `BASE_URL`, `USER_LOGIN` e `PASSWORD_LOGIN`) são automaticamente injetadas na configuração do Playwright (`playwright.config.js`).
 
 ---
 
@@ -116,7 +142,7 @@ npx playwright test --ui
 ### Executar uma suíte específica:
 
 ```bash
-npx playwright test playwright/e2e/links/post.spec.js
+npx playwright test playwright/e2e/redirect/get.spec.js
 ```
 
 ### Visualizar o relatório HTML da última execução:
