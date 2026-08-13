@@ -1,4 +1,3 @@
-import { request } from "@playwright/test";
 import { getLoginUser } from "../factories/loginUser";
 import { faker } from "@faker-js/faker";
 
@@ -30,6 +29,24 @@ export const linkService = (request) => {
         });
     };
 
+    const getLinks = async (customToken) => {
+        const headers = {};
+        let token;
+        if (customToken === undefined) {
+            token = await getToken();
+            headers['Authorization'] = `Bearer ${token}`;
+        } else if (customToken === 'invalidToken') {
+            token = 'invalidToken';
+            headers['Authorization'] = `Bearer ${customToken}`;
+        } else if (customToken === null) {
+            headers[null];
+        }
+
+        return await request.get('/api/links', {
+            headers,
+        });
+    };
+
     const payloadLink = () => {
         const payload = {
             original_url: faker.internet.url(),
@@ -38,9 +55,58 @@ export const linkService = (request) => {
         return payload;
     };
 
+    const getLinkId = async () => {
+        const headers = {};
+        const token = await getToken();
+        headers['Authorization'] = `Bearer ${token}`;
+
+        const response = await request.get(`/api/links`, {
+            headers,
+        });
+
+        const responseBody = await response.json();
+        return responseBody.data[0].id;
+    };
+
+    const getCode = async () => {
+        let code;
+        const headers = {};
+        const token = await getToken();
+        headers['Authorization'] = `Bearer ${token}`;
+
+        const response = await request.get(`/api/links`, {
+            headers,
+        });
+
+        const responseBody = await response.json();
+        code = responseBody.data[0].short_code;
+
+        return code;
+    };
+
+    const deleteLink = async (id) => {
+        const headers = {};
+        const token = await getToken();
+        headers['Authorization'] = `Bearer ${token}`;
+
+        return await request.delete(`/api/links/${id}`, {
+            headers
+        });
+    };
+
+    const redirect = async (code, options = {}) => {
+
+        return await request.get(`/${code}`, options);
+    };
+
     return {
         createLink,
-        payloadLink
+        payloadLink,
+        getLinks,
+        getLinkId,
+        deleteLink,
+        getCode,
+        redirect
     };
 
 }
